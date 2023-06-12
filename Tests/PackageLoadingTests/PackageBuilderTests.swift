@@ -2859,7 +2859,10 @@ class PackageBuilderTests: XCTestCase {
         }
     }
 
-    func testXcodeResources() throws {
+    func testXcodeResources5_4AndEarlier() throws {
+        // In SwiftTools 5.4 and earlier, supported xcbuild file types are supported by default.
+        // Of course, modern file types such as xcstrings won't be supported here because those require a newer Swift tools version in general.
+        
         let root: AbsolutePath = "/Foo"
         let Foo = root.appending(components: "Sources", "Foo")
 
@@ -2886,6 +2889,43 @@ class PackageBuilderTests: XCTestCase {
                     Foo.appending(components: "Foo.xib").pathString,
                     Foo.appending(components: "Foo.xcdatamodel").pathString,
                     Foo.appending(components: "Foo.xcassets").pathString,
+                    Foo.appending(components: "Foo.metal").pathString
+                ])
+            }
+        }
+    }
+    
+    func testXcodeResources5_5AndLater() throws {
+        // In SwiftTools 5.5 and later, xcbuild file types are only supported when explicitly passed via additionalFileRules.
+        
+        let root: AbsolutePath = "/Foo"
+        let Foo = root.appending(components: "Sources", "Foo")
+
+        let fs = InMemoryFileSystem(emptyFiles:
+            Foo.appending(components: "foo.swift").pathString,
+            Foo.appending(components: "Foo.xcassets").pathString,
+            Foo.appending(components: "Foo.xcstrings").pathString,
+            Foo.appending(components: "Foo.xib").pathString,
+            Foo.appending(components: "Foo.xcdatamodel").pathString,
+            Foo.appending(components: "Foo.metal").pathString
+        )
+
+        let manifest = Manifest.createRootManifest(
+            displayName: "Foo",
+            toolsVersion: .v5_9,
+            targets: [
+                try TargetDescription(name: "Foo"),
+            ]
+        )
+
+        PackageBuilderTester(manifest, path: root, supportXCBuildTypes: true, in: fs) { result, diagnostics in
+            result.checkModule("Foo") { result in
+                result.checkSources(sources: ["foo.swift"])
+                result.checkResources(resources: [
+                    Foo.appending(components: "Foo.xib").pathString,
+                    Foo.appending(components: "Foo.xcdatamodel").pathString,
+                    Foo.appending(components: "Foo.xcassets").pathString,
+                    Foo.appending(components: "Foo.xcstrings").pathString,
                     Foo.appending(components: "Foo.metal").pathString
                 ])
             }
@@ -2958,6 +2998,7 @@ final class PackageBuilderTester {
         binaryArtifacts: [String: BinaryArtifact] = [:],
         shouldCreateMultipleTestProducts: Bool = false,
         createREPLProduct: Bool = false,
+        supportXCBuildTypes: Bool = false,
         in fs: FileSystem,
         file: StaticString = #file,
         line: UInt = #line,
@@ -2972,7 +3013,7 @@ final class PackageBuilderTester {
                 manifest: manifest,
                 productFilter: .everything,
                 path: path,
-                additionalFileRules: [],
+                additionalFileRules: supportXCBuildTypes ? FileRuleDescription.xcbuildFileTypes : FileRuleDescription.swiftpmFileTypes,
                 binaryArtifacts: binaryArtifacts,
                 shouldCreateMultipleTestProducts: shouldCreateMultipleTestProducts,
                 warnAboutImplicitExecutableTargets: true,

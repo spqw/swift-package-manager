@@ -1,0 +1,13 @@
+{
+  "author": {
+    "name": "demo-ascii",
+    "organization": {
+      "name": "demo-ascii"
+    }
+  },
+  "description": "ASCII-only metadata should survive publish and resolve.",
+  "readmeURL": "https://example.com/demo-ascii/README.md",
+  "repositoryURLs": [
+    "https://example.com/demo-ascii"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "author": {
+    "name": "demo-unicode",
+    "organization": {
+      "name": "demo-unicode"
+    }
+  },
+  "description": "This metadata includes a non-ASCII apostrophe: user’s package.",
+  "readmeURL": "https://example.com/demo-unicode/README.md",
+  "repositoryURLs": [
+    "https://example.com/demo-unicode"
+  ]
+}

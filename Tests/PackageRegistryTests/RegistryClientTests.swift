@@ -3425,9 +3425,9 @@ fileprivate var availabilityURL = URL("\(registryURL)/availability")
                 #expect(request.headers.get("X-Swift-Package-Signature-Format").first == nil)
 
                 // TODO: implement multipart form parsing
-                let body = String(decoding: request.body!, as: UTF8.self)
-                XCTAssertMatch(body, .contains(archiveContent))
-                XCTAssertMatch(body, .contains(metadataContent))
+                let body = String(decoding: try #require(request.body), as: UTF8.self)
+                #expect(body.contains(archiveContent))
+                #expect(body.contains(metadataContent))
 
                 return .init(
                     statusCode: 201,
@@ -3490,9 +3490,9 @@ fileprivate var availabilityURL = URL("\(registryURL)/availability")
                 #expect(request.headers.get("X-Swift-Package-Signature-Format").first == nil)
 
                 // TODO: implement multipart form parsing
-                let body = String(decoding: request.body!, as: UTF8.self)
-                XCTAssertMatch(body, .contains(archiveContent))
-                XCTAssertMatch(body, .contains(metadataContent))
+                let body = String(decoding: try #require(request.body), as: UTF8.self)
+                #expect(body.contains(archiveContent))
+                #expect(body.contains(metadataContent))
 
                 return .init(
                     statusCode: 202,
@@ -3553,11 +3553,11 @@ fileprivate var availabilityURL = URL("\(registryURL)/availability")
                 #expect(request.headers.get("X-Swift-Package-Signature-Format").first == signatureFormat.rawValue)
 
                 // TODO: implement multipart form parsing
-                let body = String(decoding: request.body!, as: UTF8.self)
-                XCTAssertMatch(body, .contains(archiveContent))
-                XCTAssertMatch(body, .contains(metadataContent))
-                XCTAssertMatch(body, .contains(signature))
-                XCTAssertMatch(body, .contains(metadataSignature))
+                let body = String(decoding: try #require(request.body), as: UTF8.self)
+                #expect(body.contains(archiveContent))
+                #expect(body.contains(metadataContent))
+                #expect(body.contains(signature))
+                #expect(body.contains(metadataSignature))
 
                 return .init(
                     statusCode: 201,
